@@ -244,7 +244,7 @@ def gain (data_x, gain_parameters):
   X_mb = norm_data_x          
   X_mb = M_mb * X_mb + (1-M_mb) * Z_mb 
       
-  imputed_data = sess.run([G_sample], feed_dict = {X: X_mb, M: M_mb})[0]
+  imputed_data = sess.run([G_sample_HeG], feed_dict = {X: X_mb, M: M_mb})[0]
   
   imputed_data = data_m * norm_data_x + (1-data_m) * imputed_data
   
