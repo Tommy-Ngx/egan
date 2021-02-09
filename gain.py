@@ -93,8 +93,8 @@ def gain (data_x, gain_parameters):
   def generator(x,m):
     # Concatenate Mask and Data
     inputs = tf.concat(values = [x, m], axis = 1) 
-    G_h1 = tf.nn.lrelu(tf.matmul(inputs, G_W1) + G_b1) # lrelu 
-    G_h2 = tf.nn.lrelu(tf.matmul(G_h1, G_W2) + G_b2)   # lrelu 
+    G_h1 = tf.nn.relu(tf.matmul(inputs, G_W1) + G_b1) # lrelu 
+    G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)   # lrelu 
     # MinMax normalized output
     G_prob = tf.nn.sigmoid(tf.matmul(G_h2, G_W3) + G_b3) 
     return G_prob
@@ -103,8 +103,8 @@ def gain (data_x, gain_parameters):
   def discriminator(x, h):
     # Concatenate Data and Hint
     inputs = tf.concat(values = [x, h], axis = 1) 
-    D_h1 = tf.nn.lrelu(tf.matmul(inputs, D_W1) + D_b1)   # lrelu 
-    D_h2 = tf.nn.lrelu(tf.matmul(D_h1, D_W2) + D_b2)     # lrelu 
+    D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)   # lrelu 
+    D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)     # lrelu 
     D_logit = tf.matmul(D_h2, D_W3) + D_b3  
     D_prob = tf.nn.sigmoid(D_logit)
     return D_prob
@@ -187,8 +187,8 @@ def gain (data_x, gain_parameters):
   sess = tf1.Session()
   sess.run(tf1.global_variables_initializer())
    
-  self.mutNum=3
-  self.loss_type=['heuristic','minimax','ls']
+  mutNum=3
+  loss_type=['heuristic','minimax','ls']
 
   # Start Iterations (training)
   for it in tqdm(range(iterations)):    
@@ -211,19 +211,19 @@ def gain (data_x, gain_parameters):
       _, D_loss_curr_HeG = sess.run([D_solver_HeG, D_loss_temp_HeG], 
                               feed_dict = {M: M_mb, X: X_mb, H: H_mb})
     else:
-      for type_i in range(self.mutNum):
-        if self.loss_type[type_i]=='heuristic':
+      for type_i in range(mutNum):
+        if loss_type[type_i]=='heuristic':
 
     #_, D_loss_curr = sess.run([D_solver, D_loss_temp], 
     #                          feed_dict = {M: M_mb, X: X_mb, H: H_mb})
           _, D_loss_curr_HeG = sess.run([D_solver_HeG, D_loss_temp_HeG], 
                               feed_dict = {M: M_mb, X: X_mb, H: H_mb})
 
-        elif self.loss_type[type_i]=='minimax':
+        elif loss_type[type_i]=='minimax':
           _, D_loss_curr_MinG = sess.run([D_solver_MinG, D_loss_temp_MinG], 
                               feed_dict = {M: M_mb, X: X_mb, H: H_mb})
 
-        elif self.loss_type[type_i]=='ls':
+        elif loss_type[type_i]=='ls':
           _, D_loss_curr_LsG = sess.run([D_solver_LsG, D_loss_temp_LsG], 
                               feed_dict = {M: M_mb, X: X_mb, H: H_mb})
 
@@ -233,7 +233,7 @@ def gain (data_x, gain_parameters):
     #         feed_dict = {X: X_mb, M: M_mb, H: H_mb})
 
     _, G_loss_curr_HeG, MSE_loss_curr = \
-    sess.run([G_solver_HeG, G_loss_temp_HeG, MSE_loss],
+    sess.run([G_solver_HeG, G_loss_temp_HeG, MSE_loss_HeG],
              feed_dict = {X: X_mb, M: M_mb, H: H_mb})
 
 
