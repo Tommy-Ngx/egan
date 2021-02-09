@@ -73,7 +73,7 @@ def main (args):
   print()
   print('=== MissForest RMSE ===')
   data = miss_data_x
-  imp_mean = MissForest(max_iter = 5)
+  imp_mean = MissForest(max_iter = 1)
   miss_f = imp_mean.fit_transform(data)
   #miss_f = pd.DataFrame(imputed_train_df)
   rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
@@ -86,7 +86,7 @@ def main (args):
   print('=== MICE of Auto Impute RMSE ===')
   data_mice = pd.DataFrame(miss_data_x)
   mi = MiceImputer(k=1, imp_kwgs=None, n=1, predictors='all', return_list=True,
-        seed=None, strategy='default predictive', visit='default')
+        seed=None, strategy='interpolate', visit='default')
   mice_out = mi.fit_transform(data_mice)
   c = [list(x) for x in mice_out]
   c1= c[0]
