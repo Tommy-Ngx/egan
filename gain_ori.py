@@ -7,6 +7,8 @@ Contact: jsyoon0823@gmail.com
 '''
 
 # Necessary packages
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorflow.compat.v1 as tf1
 tf1.disable_v2_behavior() 

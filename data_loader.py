@@ -2,6 +2,8 @@
 '''
 
 # Necessary packages
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 from utils import binary_sampler
 from keras.datasets import mnist
