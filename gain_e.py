@@ -117,11 +117,14 @@ def gain (data_x, gain_parameters):
   # Generator
   #G_sample = generator(X, M)
 
+  G_sample_z    = generator(X, M)
   G_sample_HeG  = generator(X, M)
   G_sample_MinG = generator(X, M)
   G_sample_LsG  = generator(X, M)
  
   # Combine with observed data
+
+  Hat_X_z    = X * M + G_sample_z    * (1-M)
   Hat_X_HeG  = X * M + G_sample_HeG  * (1-M)
   Hat_X_MinG = X * M + G_sample_MinG * (1-M)
   Hat_X_LsG  = X * M + G_sample_LsG  * (1-M)
@@ -129,6 +132,7 @@ def gain (data_x, gain_parameters):
   # Discriminator
   #D_prob = discriminator(Hat_X, H)
 
+  D_prob_z   = discriminator(Hat_X_z   , H)
   D_prob_HeG = discriminator(Hat_X_HeG , H)
   D_prob_MinG= discriminator(Hat_X_MinG, H)
   D_prob_LsG = discriminator(Hat_X_LsG , H)
@@ -137,7 +141,10 @@ def gain (data_x, gain_parameters):
   
   ## GAIN loss
   #D_loss_temp = -tf.reduce_mean(M * tf1.log(D_prob + 1e-8) \
-  #                              + (1-M) * tf1.log(1. - D_prob + 1e-8)) 
+  #                              + (1-M) * tf1.log(1. - D_prob + 1e-8))
+
+  D_loss_temp_z   = -tf.reduce_mean(M * tf1.log(D_prob_z + 1e-8) \
+                                + (1-M) * tf1.log(1. - D_prob_z + 1e-8))  
   D_loss_temp_HeG = -tf.reduce_mean(M * tf1.log(D_prob_HeG + 1e-8) \
                                 + (1-M) * tf1.log(1. - D_prob_HeG + 1e-8)) 
   D_loss_temp_MinG = -tf.reduce_mean(M * tf1.log(D_prob_MinG + 1e-8) \
@@ -147,13 +154,16 @@ def gain (data_x, gain_parameters):
 
 
   #G_loss_temp = -tf.reduce_mean((1-M) * tf1.log(D_prob + 1e-8))
-  G_loss_temp_HeG = -tf.reduce_mean((1-M) * tf1.log(D_prob_HeG + 1e-8))
+  G_loss_temp_HeG  = -tf.reduce_mean((1-M) * tf1.log(D_prob_HeG + 1e-8))
   G_loss_temp_MinG = -tf.reduce_mean((1-M) * tf1.log(D_prob_MinG + 1e-8))
-  G_loss_temp_LsG = -tf.reduce_mean((1-M) * tf1.log(D_prob_LsG + 1e-8))
+  G_loss_temp_LsG  = -tf.reduce_mean((1-M) * tf1.log(D_prob_LsG + 1e-8))
 
   
   #MSE_loss = \
-  #tf.reduce_mean((M * X - M * G_sample)**2) / tf.reduce_mean(M)  
+  #tf.reduce_mean((M * X - M * G_sample)**2) / tf.reduce_mean(M)
+
+  MSE_loss_z  = \
+  tf.reduce_mean((M * X - M * G_sample_z)**2) / tf.reduce_mean(M)  
   MSE_loss_HeG  = \
   tf.reduce_mean((M * X - M * G_sample_HeG)**2) / tf.reduce_mean(M)
   MSE_loss_MinG = \
@@ -163,6 +173,7 @@ def gain (data_x, gain_parameters):
 
 
   #D_loss = D_loss_temp
+  D_loss_z    = D_loss_temp_z
   D_loss_HeG  = D_loss_temp_HeG
   D_loss_MinG = D_loss_temp_MinG
   D_loss_LsG  = D_loss_temp_LsG
@@ -176,6 +187,7 @@ def gain (data_x, gain_parameters):
   
   ## GAIN solver
   #D_solver = tf1.train.AdamOptimizer().minimize(D_loss, var_list=theta_D)
+  D_solver_z    = tf1.train.AdamOptimizer().minimize(D_loss_z, var_list=theta_D)
   D_solver_HeG  = tf1.train.AdamOptimizer().minimize(D_loss_HeG, var_list=theta_D)
   D_solver_MinG = tf1.train.AdamOptimizer().minimize(D_loss_MinG, var_list=theta_D)
   D_solver_LsG  = tf1.train.AdamOptimizer().minimize(D_loss_LsG, var_list=theta_D)
@@ -210,7 +222,7 @@ def gain (data_x, gain_parameters):
     X_mb = M_mb * X_mb + (1-M_mb) * Z_mb 
       
     if it==0:
-      _, D_loss_curr_HeG = sess.run([D_solver_HeG, D_loss_temp_HeG], 
+      _, D_loss_curr_z = sess.run([D_solver_z, D_loss_temp_z], 
                               feed_dict = {M: M_mb, X: X_mb, H: H_mb})
     else:
       for type_i in range(mutNum):
