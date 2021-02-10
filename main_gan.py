@@ -2,8 +2,7 @@
 '''
 
 # Necessary packages
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,6 +20,8 @@ from impyute.imputation.cs import mice
 import pandas as pd
 from autoimpute.imputations import MiceImputer, SingleImputer, MultipleImputer
 from autoimpute.analysis import MiLinearRegression
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 def main (args):
