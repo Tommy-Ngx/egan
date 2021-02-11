@@ -2,17 +2,18 @@
 '''
 
 # Necessary packages
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import argparse
 import numpy as np
 
 from data_loader import data_loader
-from gain import gain
+from gain_ori import gain
 from utils import rmse_loss
 from missingpy import MissForest
 from sklearn import metrics
