@@ -68,8 +68,8 @@ def main (args):
   print('=== GAIN RMSE ===')
   print('RMSE Performance: ' + str(np.round(rmse, 6)))
   #print('Kích thước của file đầu ra: ', imputed_data_x.shape)
-  np.savetxt("data/imputed_data.csv",imputed_data_x, delimiter=',',  fmt='%d')
-  print( 'Save results in Imputed_data.csv')
+  np.savetxt("data/imputed_data_egan.csv",imputed_data_x, delimiter=',',  fmt='%d')
+  print( 'Save results in Imputed_data_egan.csv')
   
   # MissForest
 
