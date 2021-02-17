@@ -168,7 +168,7 @@ def gain (miss_data_x, gain_parameters):
     fitness_best = np.zeros(nbest)
     fitness_candi = np.zeros(ncandi)
     # for it in tqdm(range(iterations)):
-    for it in range(iterations):
+    for it in tqdm(range(iterations)):
         # Train candidates G
         if it == 0:
             for can_i in range(0, ncandi):
