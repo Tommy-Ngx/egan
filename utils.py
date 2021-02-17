@@ -194,4 +194,9 @@ def sample_batch_index(total, batch_size):
   return batch_idx
   
 
-  
+def sample_batch_binary(dim, batch_size):
+  skip_index = [np.random.randint(dim) for i in range(batch_size)]
+  B_mb = np.ones((batch_size, dim))
+  for i in range(len(skip_index)):
+    B_mb[i, skip_index[i]] = 0
+  return B_mb
