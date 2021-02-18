@@ -47,8 +47,8 @@ def gain (miss_data_x, gain_parameters):
     loss_type = ['trickLogD', 'minimax', 'ls']
     nloss = 3
     beta = 1.0
-    ncandi = 3
-    nbest = 3
+    ncandi = 1#3
+    nbest = 1#3
     nD = 1  # # of discrim updates for each gen update
     # Other parameters
     no, dim = miss_data_x.shape
