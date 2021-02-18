@@ -199,7 +199,7 @@ def gain (miss_data_x, gain_parameters):
                     batch_idx = sample_batch_index(no, batch_size)
                     X_mb = norm_data_x[batch_idx, :]
                     M_mb = m[batch_idx, :]
-                    Z_mb = uniform_sampler(0.0, 1.0, batch_size, dim)
+                    Z_mb = uniform_sampler(0.0, 0.01, batch_size, dim) # update 1.0 ==> 0.01
                     X_mb = M_mb * X_mb + (1 - M_mb) * Z_mb
                     B_mb = sample_batch_binary(dim, batch_size)
                     # Load and update weights
@@ -249,7 +249,7 @@ def gain (miss_data_x, gain_parameters):
             batch_idx = sample_batch_index(no, batch_size)
             X_mb = norm_data_x[batch_idx, :]
             M_mb = m[batch_idx, :]
-            Z_mb = uniform_sampler(0.0, 1.0, batch_size, dim)
+            Z_mb = uniform_sampler(0.0, 0.01, batch_size, dim) # 1.0 ==> 0.01
             X_mb = M_mb * X_mb + (1 - M_mb) * Z_mb
             B_mb = sample_batch_binary(dim, batch_size)
             # impute data for each candidat
