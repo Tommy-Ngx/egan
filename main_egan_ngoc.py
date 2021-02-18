@@ -68,7 +68,7 @@ def main (args):
   print('=== EGAN Chi NGOC RMSE ===')
   print('RMSE Performance: ' + str(np.round(rmse, 6)))
   #print('Kích thước của file đầu ra: ', imputed_data_x.shape)
-  np.savetxt("data/imputed_data.csv",imputed_data_x, delimiter=',',  fmt='%d')
+  np.savetxt("data/imputed_data_engoc.csv",imputed_data_x, delimiter=',',  fmt='%d')
   print( 'Save results in Imputed_data_engoc.csv')
   
   # MissForest
