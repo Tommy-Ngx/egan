@@ -65,11 +65,11 @@ def main (args):
   print( 'Save results in missing_data.csv')
   
   print()
-  print('=== GAIN RMSE ===')
+  print('=== EGAN Chi NGOC RMSE ===')
   print('RMSE Performance: ' + str(np.round(rmse, 6)))
   #print('Kích thước của file đầu ra: ', imputed_data_x.shape)
   np.savetxt("data/imputed_data.csv",imputed_data_x, delimiter=',',  fmt='%d')
-  print( 'Save results in Imputed_data.csv')
+  print( 'Save results in Imputed_data_engoc.csv')
   
   # MissForest
 
