@@ -76,7 +76,7 @@ def main (args):
   print()
   print('=== MissForest RMSE ===')
   data = miss_data_x
-  imp_mean = MissForest(max_iter = 1)
+  imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=1)
   miss_f = imp_mean.fit_transform(data)
   #miss_f = pd.DataFrame(imputed_train_df)
   rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
