@@ -159,6 +159,7 @@ def binary_sampler(p, rows, cols):
   Returns:
     - binary_random_matrix: generated binary random matrix.
   '''
+  np.random.seed(42)
   unif_random_matrix = np.random.uniform(0., 1., size = [rows, cols])
   binary_random_matrix = 1*(unif_random_matrix < p)
   return binary_random_matrix
