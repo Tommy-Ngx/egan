@@ -7,20 +7,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import argparse
-import numpy as np
-
-from data_loader import data_loader
-from gain_e_ngoc import gain
-from utils import rmse_loss
-from missingpy import MissForest
-from sklearn import metrics
-from math import sqrt
-from impyute.imputation.cs import mice
-import pandas as pd
-from autoimpute.imputations import MiceImputer, SingleImputer, MultipleImputer
-from autoimpute.analysis import MiLinearRegression
-
 import warnings
 warnings.filterwarnings('ignore',category=FutureWarning)
 warnings.filterwarnings('ignore', category=DeprecationWarning)
@@ -37,6 +23,21 @@ deprecation._PER_MODULE_WARNING_LIMIT = 0
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import argparse
+import numpy as np
+
+from data_loader import data_loader
+from gain_e_ngoc import gain
+from utils import rmse_loss
+from missingpy import MissForest
+from sklearn import metrics
+from math import sqrt
+from impyute.imputation.cs import mice
+import pandas as pd
+from autoimpute.imputations import MiceImputer, SingleImputer, MultipleImputer
+from autoimpute.analysis import MiLinearRegression
+
 
 
 
