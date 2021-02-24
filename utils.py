@@ -168,6 +168,21 @@ def binary_sampler(p, rows, cols):
   binary_random_matrix = 1*(unif_random_matrix < p)
   return binary_random_matrix
 
+def binary_sampler2(p, rows, cols,random):
+  '''Sample binary random variables.
+  
+  Args:
+    - p: probability of 1
+    - rows: the number of rows
+    - cols: the number of columns
+    
+  Returns:
+    - binary_random_matrix: generated binary random matrix.
+  '''
+  np.random.seed(random)
+  unif_random_matrix = np.random.uniform(0., 1., size = [rows, cols])
+  binary_random_matrix = 1*(unif_random_matrix < p)
+  return binary_random_matrix
 
 def uniform_sampler(low, high, rows, cols):
   '''Sample uniform random variables.
