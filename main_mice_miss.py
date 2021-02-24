@@ -129,8 +129,8 @@ def main (args):
 
 
       data_mice = pd.DataFrame(miss_data_x)
-      mi = MiceImputer(k=2, imp_kwgs=None, n=1, predictors='all', return_list=True,
-            seed=None, strategy='interpolate', visit='default') #lrd, interplate,mean , median, mode, norm 
+      mi = MiceImputer(k=2, imp_kwgs=None, n=2, predictors='all', return_list=True,
+            seed=None, strategy='random', visit='default') #lrd, interplate,mean , median, mode, norm 
       mice_out = mi.fit_transform(data_mice)
       c = [list(x) for x in mice_out]
       c1= c[0]
