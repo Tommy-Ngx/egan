@@ -26,7 +26,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import argparse
 import numpy as np
 
-from data_loader import data_loader
+from data_loader import data_loader, data_loader2
 from gain_ori import gain
 from utils import rmse_loss
 from missingpy import MissForest
