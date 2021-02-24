@@ -112,11 +112,15 @@ def main (args):
   mice_lr =[]
   for i in range(random):
       ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
+
+      mi_data = miss_data_x.astype(float)
+      np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
+
       if i % 10 == 0:
         print('=== Working on {}/{} ==='.format(i, random))
       data = miss_data_x
       #imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=2, max_depth=1,random_state=99)
-      imp_mean = MissForest(max_iter = 3, n_estimators=3, max_features=3)
+      imp_mean = MissForest(max_iter = 2)
       miss_f = imp_mean.fit_transform(data)
       #miss_f = pd.DataFrame(imputed_train_df)
       #rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
@@ -125,7 +129,7 @@ def main (args):
 
 
       data_mice = pd.DataFrame(miss_data_x)
-      mi = MiceImputer(k=1, imp_kwgs=None, n=1, predictors='all', return_list=True,
+      mi = MiceImputer(k=2, imp_kwgs=None, n=1, predictors='all', return_list=True,
             seed=None, strategy='interpolate', visit='default') #lrd, interplate,mean , median, mode, norm 
       mice_out = mi.fit_transform(data_mice)
       c = [list(x) for x in mice_out]
@@ -151,13 +155,16 @@ def main (args):
 
       miss_lr.append(miss1_lr)
       mice_lr.append(mice1_lr)
-
+  
   print('Method: {}'.format(data_name))
-  print('AUC DecisionTreeClassifier MISS: {} + {}'.format(round(np.mean(miss_forest),6), round(np.std(miss_forest),6)))
-  print('AUC DecisionTreeClassifier MICE: {} + {}'.format(round(np.mean(mice),6), round(np.std(mice),6)))
+  print(miss_forest)
+  print(mice)
   print()
-  print('AUC LogisticRegression MISS: {} + {}'.format(round(np.mean(miss_lr),6), round(np.std(miss_lr),6)))
-  print('AUC LogisticRegression MICE: {} + {}'.format(round(np.mean(mice_lr),6), round(np.std(mice_lr),6)))
+  print('AUC DecisionTreeClassifier MISS: {} ± {}'.format(round(np.mean(miss_forest),6), np.std(miss_forest)))
+  print('AUC DecisionTreeClassifier MICE: {} ± {}'.format(round(np.mean(mice),6), np.std(mice)))
+  print()
+  print('AUC LogisticRegression MISS: {} ± {}'.format(round(np.mean(miss_lr),6), np.std(miss_lr)))
+  print('AUC LogisticRegression MICE: {} ± {}'.format(round(np.mean(mice_lr),6), np.std(mice_lr)))
   # Impute missing data
   #imputed_data_x = gain(miss_data_x, gain_parameters)
   
