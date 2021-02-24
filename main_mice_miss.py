@@ -42,6 +42,7 @@ from sklearn.model_selection import train_test_split
 
 def auc_impute(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
+    df1 = df1.rename(columns={'target': 'Class'})
     df1['Class'] = pd.factorize(df1['Class'])[0] + 1
     col_Names=list(df1.columns)
     df = pd.read_csv("/content/tommy/data/{}.csv".format(impute), names=col_Names)
@@ -94,7 +95,8 @@ def main (args):
   mice = []
   for i in range(random):
       ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
-      print('=== Working on {}/{} ==='.format(i, random))
+      if i % 10 == 0:
+        print('=== Working on {}/{} ==='.format(i, random))
       data = miss_data_x
       #imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=2, max_depth=1,random_state=99)
       imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1)
@@ -121,15 +123,16 @@ def main (args):
       np.savetxt("data/imputed_data_MICE.csv",mice_x, delimiter=',',  fmt='%d')
 
       
-      miss_acc = auc_impute('imputed_data_MF','{}_full'.format(uci))
-      mice_acc = auc_impute('imputed_data_MICE','{}_full'.format(uci))
+      miss_acc = auc_impute('imputed_data_MF','{}_full'.format(data_name))
+      mice_acc = auc_impute('imputed_data_MICE','{}_full'.format(data_name))
 
       miss_forest.append(miss_acc)
       mice.append(mice_acc)
 
+
   print('Method: {}'.format(data_name))
-  print('Mean Validation AUC MISS: {}'.format(round(np.mean(miss_forest),6)))
-  print('Mean Validation AUC MICE: {}'.format(round(np.mean(mice),6)))
+  print('Mean Validation AUC MISS: {} + {}'.format(round(np.mean(miss_forest),6), round(np.std(miss_forest),6)))
+  print('Mean Validation AUC MICE: {} + {}'.format(round(np.mean(mice),6), round(np.std(miss_forest),6)))
 
   # Impute missing data
   #imputed_data_x = gain(miss_data_x, gain_parameters)
