@@ -38,6 +38,7 @@ from autoimpute.imputations import MiceImputer, SingleImputer, MultipleImputer
 from autoimpute.analysis import MiLinearRegression
 from sklearn.model_selection import StratifiedShuffleSplit, cross_val_score
 from sklearn.tree import  DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 def auc_dt(impute,data):
@@ -142,14 +143,14 @@ def main (args):
       miss_acc = auc_dt('imputed_data_MF','{}_full'.format(data_name))
       mice_acc = auc_dt('imputed_data_MICE','{}_full'.format(data_name))
 
-      miss_lr = auc_lr('imputed_data_MF','{}_full'.format(data_name))
-      mice_lr = auc_lr('imputed_data_MICE','{}_full'.format(data_name))
+      miss1_lr = auc_lr('imputed_data_MF','{}_full'.format(data_name))
+      mice1_lr = auc_lr('imputed_data_MICE','{}_full'.format(data_name))
 
       miss_forest.append(miss_acc)
       mice.append(mice_acc)
 
-      miss_lr.append(miss_lr)
-      mice_lr.append(mice_lr)
+      miss_lr.append(miss1_lr)
+      mice_lr.append(mice1_lr)
 
   print('Method: {}'.format(data_name))
   print('AUC DecisionTreeClassifier MISS: {} + {}'.format(round(np.mean(miss_forest),6), round(np.std(miss_forest),6)))
