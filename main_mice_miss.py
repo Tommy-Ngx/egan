@@ -116,7 +116,7 @@ def main (args):
         print('=== Working on {}/{} ==='.format(i, random))
       data = miss_data_x
       #imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=2, max_depth=1,random_state=99)
-      imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1)
+      imp_mean = MissForest(max_iter = 3, n_estimators=3, max_features=3)
       miss_f = imp_mean.fit_transform(data)
       #miss_f = pd.DataFrame(imputed_train_df)
       #rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
@@ -126,7 +126,7 @@ def main (args):
 
       data_mice = pd.DataFrame(miss_data_x)
       mi = MiceImputer(k=1, imp_kwgs=None, n=1, predictors='all', return_list=True,
-            seed=None, strategy='mode', visit='default') #lrd, interplate,mean , median, mode, norm 
+            seed=None, strategy='interpolate', visit='default') #lrd, interplate,mean , median, mode, norm 
       mice_out = mi.fit_transform(data_mice)
       c = [list(x) for x in mice_out]
       c1= c[0]
