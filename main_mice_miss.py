@@ -40,7 +40,7 @@ from sklearn.model_selection import StratifiedShuffleSplit, cross_val_score
 from sklearn.tree import  DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 
-def auc_impute(impute,data):
+def auc_dt(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
     df1 = df1.rename(columns={'target': 'Class'})
     df1['Class'] = pd.factorize(df1['Class'])[0] + 1
@@ -62,6 +62,19 @@ def auc_impute(impute,data):
     #print('Method: {}'.format(impute))
     #print('Mean Validation AUC AUC: {}'.format(round(np.mean(score_dct),6)))
 
+def auc_lr(impute,data):
+    df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
+    df1 = df1.rename(columns={'target': 'Class'})
+    df1['Class'] = pd.factorize(df1['Class'])[0] + 1
+    col_Names=list(df1.columns)
+    df = pd.read_csv("/content/tommy/data/{}.csv".format(impute), names=col_Names)
+    X = df.drop(['Class'], axis=1)
+    targets = df1['Class'].values
+    X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
+    clf = LogisticRegression(max_iter=1000)
+    clf.fit(X_train, y_train)
+    test_pred_decision_tree = clf.predict(test_x)
+    return  metrics.accuracy_score(test_lab, test_pred_decision_tree)
 
 def main (args):
   '''Main function for UCI letter and spam datasets.
@@ -93,6 +106,9 @@ def main (args):
 
   miss_forest = []
   mice = []
+
+  miss_lr =[]
+  mice_lr =[]
   for i in range(random):
       ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
       if i % 10 == 0:
@@ -123,17 +139,24 @@ def main (args):
       np.savetxt("data/imputed_data_MICE.csv",mice_x, delimiter=',',  fmt='%d')
 
       
-      miss_acc = auc_impute('imputed_data_MF','{}_full'.format(data_name))
-      mice_acc = auc_impute('imputed_data_MICE','{}_full'.format(data_name))
+      miss_acc = auc_dt('imputed_data_MF','{}_full'.format(data_name))
+      mice_acc = auc_dt('imputed_data_MICE','{}_full'.format(data_name))
+
+      miss_lr = auc_lr('imputed_data_MF','{}_full'.format(data_name))
+      mice_lr = auc_lr('imputed_data_MICE','{}_full'.format(data_name))
 
       miss_forest.append(miss_acc)
       mice.append(mice_acc)
 
+      miss_lr.append(miss_lr)
+      mice_lr.append(mice_lr)
 
   print('Method: {}'.format(data_name))
-  print('Mean Validation AUC MISS: {} + {}'.format(round(np.mean(miss_forest),6), round(np.std(miss_forest),6)))
-  print('Mean Validation AUC MICE: {} + {}'.format(round(np.mean(mice),6), round(np.std(miss_forest),6)))
-
+  print('AUC DecisionTreeClassifier MISS: {} + {}'.format(round(np.mean(miss_forest),6), round(np.std(miss_forest),6)))
+  print('AUC DecisionTreeClassifier MICE: {} + {}'.format(round(np.mean(mice),6), round(np.std(mice),6)))
+  print()
+  print('AUC LogisticRegression MISS: {} + {}'.format(round(np.mean(miss_lr),6), round(np.std(miss_lr),6)))
+  print('AUC LogisticRegression MICE: {} + {}'.format(round(np.mean(mice_lr),6), round(np.std(mice_lr),6)))
   # Impute missing data
   #imputed_data_x = gain(miss_data_x, gain_parameters)
   
