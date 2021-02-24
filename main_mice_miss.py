@@ -51,7 +51,7 @@ def auc_dt(impute,data):
     targets = df1['Class'].values
 
     X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
-    clf = DecisionTreeClassifier(max_depth =3, random_state = 42)
+    clf = DecisionTreeClassifier( random_state = 42) # max_depth =3,
     clf.fit(X_train, y_train)
     test_pred_decision_tree = clf.predict(test_x)
     return  metrics.accuracy_score(test_lab, test_pred_decision_tree)
@@ -72,7 +72,7 @@ def auc_lr(impute,data):
     X = df.drop(['Class'], axis=1)
     targets = df1['Class'].values
     X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
-    clf = LogisticRegression(max_iter=1000)
+    clf = LogisticRegression(max_iter=10000)
     clf.fit(X_train, y_train)
     test_pred_decision_tree = clf.predict(test_x)
     return  metrics.accuracy_score(test_lab, test_pred_decision_tree)
