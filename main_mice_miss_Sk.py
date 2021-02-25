@@ -48,6 +48,10 @@ from sklearn.impute import IterativeImputer
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import linear_model
 from sklearn.linear_model import BayesianRidge
+from sklearn.utils.testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
+from warnings import filterwarnings
+filterwarnings('ignore')
 
 def auc_dt(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
@@ -144,7 +148,7 @@ def main (args):
       mi_data = miss_data_x.astype(float)
       np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
 
-      if i % 10 == 0:
+      if i % 5 == 0:
         print('=== Working on {}/{} ==='.format(i, random))
       data = miss_data_x
       #imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=2, max_depth=1,random_state=99)
@@ -159,7 +163,7 @@ def main (args):
                                  n_nearest_features=4, initial_strategy='median')
 
       miss_f = pd.DataFrame(imp_mean.fit_transform(data))
-      print(miss_f.shape)
+      #print(miss_f.shape)
       #miss_f = pd.DataFrame(imputed_train_df)
       #rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
       #print('RMSE Performance: ' + str(np.round(rmse_MF, 6)))
@@ -175,7 +179,7 @@ def main (args):
       
       #imp.fit(data)
       mice_out = pd.DataFrame(mi.fit_transform(data_mice))
-      print(mice_out.shape)
+      #print(mice_out.shape)
       #mice_out = mi.fit_transform(data_mice)
       #c = [list(x) for x in mice_out]
       #c1= c[0]
@@ -222,8 +226,8 @@ def main (args):
   #print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_lr)*100,6), np.std(mice_lr)))
 
   print()
-  print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_mlp)*100,6), np.std(miss_mlp)))
-  print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_mlp)*100,6), np.std(mice_mlp)))
+  print('AUC MLP        Regression MISS: {}% ± {}'.format(round(np.mean(miss_mlp)*100,6), np.std(miss_mlp)))
+  print('AUC MLP        Regression MICE: {}% ± {}'.format(round(np.mean(mice_mlp)*100,6), np.std(mice_mlp)))
 
 
   # Impute missing data
