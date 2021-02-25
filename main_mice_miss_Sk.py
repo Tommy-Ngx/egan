@@ -155,7 +155,7 @@ def main (args):
       #                           n_nearest_features=2, initial_strategy='median')
 
       imp_mean = IterativeImputer(estimator=ExtraTreesRegressor(n_estimators=10, random_state=0), missing_values=np.nan, sample_posterior=False, 
-                                 #max_iter=10, tol=0.001, 
+                                 max_iter=10, tol=0.001, 
                                  n_nearest_features=4, initial_strategy='median')
 
       miss_f = pd.DataFrame(imp_mean.fit_transform(data))
