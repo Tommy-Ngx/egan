@@ -40,6 +40,11 @@ from sklearn.model_selection import StratifiedShuffleSplit, cross_val_score
 from sklearn.tree import  DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 
 def auc_dt(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
@@ -62,6 +67,23 @@ def auc_dt(impute,data):
 
     #print('Method: {}'.format(impute))
     #print('Mean Validation AUC AUC: {}'.format(round(np.mean(score_dct),6)))
+
+def auc_ml(impute,data):
+    df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
+    df1 = df1.rename(columns={'target': 'Class'})
+    df1['Class'] = pd.factorize(df1['Class'])[0] + 1
+    col_Names=list(df1.columns)
+    df = pd.read_csv("/content/tommy/data/{}.csv".format(impute), names=col_Names)
+    X = df.drop(['Class'], axis=1)
+    targets = df1['Class'].values
+
+    X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
+    #clf = DecisionTreeClassifier( random_state = 42) # max_depth =3,
+    clf = MLPClassifier(hidden_layer_sizes= x_train.shape[1]//2, max_iter=500, early_stopping=True)
+    clf.fit(X_train, y_train)
+    test_pred_decision_tree = clf.predict(test_x)
+    return  metrics.accuracy_score(test_lab, test_pred_decision_tree)
+
 
 def auc_lr(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
@@ -110,6 +132,9 @@ def main (args):
 
   miss_lr =[]
   mice_lr =[]
+
+  miss_mlp = []
+  mice_mlp = []
   for i in range(random):
       ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
 
@@ -120,7 +145,13 @@ def main (args):
         print('=== Working on {}/{} ==='.format(i, random))
       data = miss_data_x
       #imp_mean = MissForest(max_iter = 1, n_estimators=1, max_features=1, max_leaf_nodes=2, max_depth=1,random_state=99)
-      imp_mean = MissForest(max_iter = 2)
+      #imp_mean = MissForest(max_iter = 2)
+
+      imp_mean = IterativeImputer(estimator=ExtraTreesRegressor(n_estimators=3, random_state=0), missing_values=np.nan, sample_posterior=False, 
+                                 max_iter=3, tol=0.001, 
+                                 n_nearest_features=2, initial_strategy='median')
+
+
       miss_f = imp_mean.fit_transform(data)
       #miss_f = pd.DataFrame(imputed_train_df)
       #rmse_MF = rmse_loss (ori_data_x, miss_f, data_m)
@@ -131,6 +162,10 @@ def main (args):
       data_mice = pd.DataFrame(miss_data_x)
       mi = MiceImputer(k=2, imp_kwgs=None, n=2, predictors='all', return_list=True,
             seed=None, strategy='random', visit='default') #lrd, interplate,mean , median, mode, norm 
+      
+
+      imp = IterativeImputer(estimator=BayesianRidge())
+      #imp.fit(data)
       mice_out = mi.fit_transform(data_mice)
       c = [list(x) for x in mice_out]
       c1= c[0]
@@ -147,14 +182,22 @@ def main (args):
       miss_acc = auc_dt('imputed_data_MF','{}_full'.format(data_name))
       mice_acc = auc_dt('imputed_data_MICE','{}_full'.format(data_name))
 
-      miss1_lr = auc_lr('imputed_data_MF','{}_full'.format(data_name))
-      mice1_lr = auc_lr('imputed_data_MICE','{}_full'.format(data_name))
+      #miss1_lr = auc_lr('imputed_data_MF','{}_full'.format(data_name))
+      #mice1_lr = auc_lr('imputed_data_MICE','{}_full'.format(data_name))
+
+      miss1_mlp = auc_mlp('imputed_data_MF','{}_full'.format(data_name))
+      mice1_mlp= auc_mlp('imputed_data_MICE','{}_full'.format(data_name))
 
       miss_forest.append(miss_acc)
       mice.append(mice_acc)
 
-      miss_lr.append(miss1_lr)
-      mice_lr.append(mice1_lr)
+      #miss_lr.append(miss1_lr)
+      #mice_lr.append(mice1_lr)
+
+      miss_mlp.append(miss1_mlp)
+      mice_mlp.append(mice1_mlp)      
+
+
   
   print('Method: {}'.format(data_name))
   print(miss_forest)
@@ -162,9 +205,16 @@ def main (args):
   print()
   print('AUC DecisionTreeClassifier MISS: {}% ± {}'.format(round(np.mean(miss_forest),6)*100, np.std(miss_forest)))
   print('AUC DecisionTreeClassifier MICE: {}% ± {}'.format(round(np.mean(mice)*100,6), np.std(mice)))
+
+  #print()
+  #print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_lr)*100,6), np.std(miss_lr)))
+  #print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_lr)*100,6), np.std(mice_lr)))
+
   print()
-  print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_lr)*100,6), np.std(miss_lr)))
-  print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_lr)*100,6), np.std(mice_lr)))
+  print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_mlp)*100,6), np.std(miss_mlp)))
+  print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_mlp)*100,6), np.std(mice_mlp)))
+
+
   # Impute missing data
   #imputed_data_x = gain(miss_data_x, gain_parameters)
   
