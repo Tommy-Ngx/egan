@@ -160,11 +160,11 @@ def main (args):
   print(miss_forest)
   print(mice)
   print()
-  print('AUC DecisionTreeClassifier MISS: {} ± {}'.format(round(np.mean(miss_forest),6), np.std(miss_forest)))
-  print('AUC DecisionTreeClassifier MICE: {} ± {}'.format(round(np.mean(mice),6), np.std(mice)))
+  print('AUC DecisionTreeClassifier MISS: {}% ± {}'.format(round(np.mean(miss_forest),6)*100, np.std(miss_forest)))
+  print('AUC DecisionTreeClassifier MICE: {}% ± {}'.format(round(np.mean(mice)*100,6), np.std(mice)))
   print()
-  print('AUC LogisticRegression MISS: {} ± {}'.format(round(np.mean(miss_lr),6), np.std(miss_lr)))
-  print('AUC LogisticRegression MICE: {} ± {}'.format(round(np.mean(mice_lr),6), np.std(mice_lr)))
+  print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_lr)*100,6), np.std(miss_lr)))
+  print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_lr)*100,6), np.std(mice_lr)))
   # Impute missing data
   #imputed_data_x = gain(miss_data_x, gain_parameters)
   
