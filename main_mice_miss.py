@@ -45,6 +45,7 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.ensemble import ExtraTreesRegressor
 
 def auc_dt(impute,data):
     df1 = pd.read_csv("/content/tommy/data/{}.csv".format(data))
