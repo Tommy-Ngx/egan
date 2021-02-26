@@ -26,7 +26,7 @@ def data_loader (data_name, miss_rate):
   '''
   
   # Load data
-  if data_name in ['letter', 'spam', 'breast', 'credit', 'news','blood','vowel','ecoli','ionosphere','parkinsons','seedst','vehicle','vertebral','wine','banknote','balance','yeast']:
+  if data_name in ['letter', 'spam', 'breast', 'credit', 'news','blood','vowel','ecoli','ionosphere','parkinsons','parkinsons2','seedst','vehicle','vertebral','wine','banknote','balance','yeast']:
     file_name = 'data/'+data_name+'.csv'
     data_x = np.loadtxt(file_name, delimiter=",", skiprows=1)
   elif data_name == 'mnist':
@@ -57,7 +57,7 @@ def data_loader2 (data_name, miss_rate, random):
   '''
   
   # Load data
-  if data_name in ['letter', 'spam', 'breast', 'credit', 'news','blood','vowel','ecoli','ionosphere','parkinsons','seedst','vehicle','vertebral','wine','banknote','balance','yeast']:
+  if data_name in ['letter', 'spam', 'breast', 'credit', 'news','blood','vowel','ecoli','ionosphere','parkinsons','parkinsons2','seedst','vehicle','vertebral','wine','banknote','balance','yeast']:
     file_name = 'data/'+data_name+'.csv'
     data_x = np.loadtxt(file_name, delimiter=",", skiprows=1)
   elif data_name == 'mnist':
