@@ -87,7 +87,7 @@ def auc_mlp(impute,data):
     X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
     #clf = DecisionTreeClassifier( random_state = 42) # max_depth =3,
     #clf = MLPClassifier(hidden_layer_sizes= X_train.shape[1]//2,  early_stopping=True) #max_iter=500,
-    clf = MLPClassifier(hidden_layer_sizes=_train.shape[1]//2, max_iter=500, early_stopping=True, 
+    clf = MLPClassifier(hidden_layer_sizes=X_train.shape[1]//2, max_iter=500, early_stopping=True, 
       #learning_rate_init=0.01,
       learning_rate='constant')
     clf.fit(X_train, y_train)
