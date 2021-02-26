@@ -87,7 +87,7 @@ def auc_mlp(impute,data):
     X_train, test_x, y_train, test_lab = train_test_split(X,targets,test_size = 0.3,random_state = 42)
     #clf = DecisionTreeClassifier( random_state = 42) # max_depth =3,
     #clf = MLPClassifier(hidden_layer_sizes= X_train.shape[1]//2,  early_stopping=True) #max_iter=500,
-    clf = MLPClassifier(hidden_layer_sizes=X_train.shape[1]//2, max_iter=500, early_stopping=True, 
+    clf = MLPClassifier(hidden_layer_sizes=_train.shape[1]//2, max_iter=500, early_stopping=True, 
       #learning_rate_init=0.01,
       learning_rate='constant')
     clf.fit(X_train, y_train)
@@ -221,16 +221,16 @@ def main (args):
   print(miss_forest)
   print(mice)
   print()
-  print('AUC DecisionTreeClassifier MISS: {}% ± {}'.format(round(np.mean(miss_forest),6)*100, np.std(miss_forest)))
-  print('AUC DecisionTreeClassifier MICE: {}% ± {}'.format(round(np.mean(mice)*100,6), np.std(mice)))
+  print('AUC DecisionTreeClassifier MISS: {} ± {}'.format(round(np.mean(miss_forest)*100,2), np.std(miss_forest)))
+  print('AUC DecisionTreeClassifier MICE: {} ± {}'.format(round(np.mean(mice)*100,2), np.std(mice)))
 
   #print()
   #print('AUC LogisticRegression MISS: {}% ± {}'.format(round(np.mean(miss_lr)*100,6), np.std(miss_lr)))
   #print('AUC LogisticRegression MICE: {}% ± {}'.format(round(np.mean(mice_lr)*100,6), np.std(mice_lr)))
 
   print()
-  print('AUC MLP        Regression MISS: {}% ± {}'.format(round(np.mean(miss_mlp)*100,6), np.std(miss_mlp)))
-  print('AUC MLP        Regression MICE: {}% ± {}'.format(round(np.mean(mice_mlp)*100,6), np.std(mice_mlp)))
+  print('AUC MLP        Regression MISS: {} ± {}'.format(round(np.mean(miss_mlp)*100,2), np.std(miss_mlp)))
+  print('AUC MLP        Regression MICE: {} ± {}'.format(round(np.mean(mice_mlp)*100,2), np.std(mice_mlp)))
 
 
   # Impute missing data
