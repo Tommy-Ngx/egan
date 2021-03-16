@@ -29,7 +29,7 @@ import numpy as np
 from data_loader import data_loader, data_loader2
 from gain_ori import gain
 from egain import egain
-from utils import rmse_loss
+from utils import rmse_loss, normalization
 from missingpy import MissForest
 from sklearn import metrics
 from math import sqrt
@@ -47,6 +47,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.tree import DecisionTreeRegressor
 from sklearn import linear_model
 from sklearn.linear_model import BayesianRidge
 from sklearn.utils.testing import ignore_warnings
@@ -139,24 +140,39 @@ def main (args):
                      'alpha': args.alpha,
                      'iterations': args.iterations,
                      'time': args.time}
-  
-  # Load data and introduce missingness
-  ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
+   # Load data and introduce missingness
+ 
+  #ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
   
 
-  gan_rs, egain_rs, miss_forest,mice, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
+  gan_rs, egain_rs, mice_rs,miss_rs, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
 
   for i in range(time):
+
+    # Load data and introduce missingness
+    ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,time)
     if i % 5 == 0:
         print('=== Working on {}/{} ==='.format(i, time))
 
     # Impute missing data
     imputed_data_x = gain(miss_data_x, gain_parameters)
     imputed_data_x_e = egain(miss_data_x, gain_parameters)
+
+    imp_mf = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 2)
+    imputed_data_mf = imp_mf.fit_transform(miss_data_x)
+    imputed_data_mf, _ = normalization(imputed_data_mf)
+
+    imp_mice = IterativeImputer(max_iter = 2)
+    imputed_data_mice = imp_mice.fit_transform(miss_data_x)
+    imputed_data_mice, _ = normalization(imputed_data_mice)
+
     
     # Report the RMSE performance
     rmse = rmse_loss (ori_data_x, imputed_data_x, data_m)
     rmse_e = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
+    rmse_mf = rmse_loss (ori_data_x, imputed_data_mf, data_m)
+    rmse_mice = rmse_loss (ori_data_x, imputed_data_mice, data_m)
+
     
     mi_data = miss_data_x.astype(float)
     no, dim = imputed_data_x.shape
@@ -165,6 +181,8 @@ def main (args):
 
     gan_rs.append(rmse)
     egain_rs.append(rmse_e)
+    mice_rs.append(rmse_mice)
+    miss_rs.append(rmse_mf)
     
     np.savetxt("data/imputed_data_gain.csv",imputed_data_x, delimiter=',',  fmt='%d')
     np.savetxt("data/imputed_data_egain.csv",imputed_data_x_e, delimiter=',',  fmt='%d')
@@ -172,6 +190,8 @@ def main (args):
   #print(gan_rs,egain_rs)
   print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),2)))
   print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),2)))
+  print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),2)))
+  print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),2)))
   
   # MissForest
 
