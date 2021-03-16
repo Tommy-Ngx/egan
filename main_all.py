@@ -150,16 +150,17 @@ def main (args):
   gan_rs, egain_rs, mice_rs,miss_rs, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
 
   for i in range(time):
+    clear_output()
     # Load data and introduce missingness
     ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,time)
     if i % 5 == 0:
         print('=== Working on {}/{} ==='.format(i, time))
 
     # Impute missing data
-    imputed_data_x = gain(miss_data_x, gain_parameters)
+    imputed_data_x   = gain(miss_data_x, gain_parameters)
     imputed_data_x_e = egain(miss_data_x, gain_parameters)
 
-    imp_mf = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 1) #20
+    imp_mf   = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 1) #20
     imputed_data_mf = imp_mf.fit_transform(miss_data_x)
     
     imp_mice = IterativeImputer(estimator = BayesianRidge(),max_iter = 1) #20
