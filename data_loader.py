@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from utils import binary_sampler, binary_sampler2
 from keras.datasets import mnist
+from sklearn.preprocessing import LabelEncoder
 
 
 def data_loader (data_name, miss_rate):
