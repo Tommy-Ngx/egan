@@ -120,13 +120,13 @@ def clf_MLP(imputed_data_x, y, train_idx, test_idx):
                                 early_stopping=True, learning_rate='constant', learning_rate_init=0.1)
     clf.fit(imputed_data_x[train_idx], y[train_idx])
     score = clf.score(imputed_data_x[test_idx], y[test_idx])
-    return np.round(score,4)
+    return np.round(score*100,4)
 
 def clf_DT(imputed_data_x, y, train_idx, test_idx):
     clf = DecisionTreeClassifier()
     clf.fit(imputed_data_x[train_idx], y[train_idx])
     score = clf.score(imputed_data_x[test_idx], y[test_idx])
-    return np.round(score,4)
+    return np.round(score*100,4)
 
 def main (args):
   '''Main function for UCI letter and spam datasets.
