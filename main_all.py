@@ -51,6 +51,7 @@ from sklearn import linear_model
 from sklearn.linear_model import BayesianRidge
 from sklearn.utils.testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
+from tqdm import tqdm
 from warnings import filterwarnings
 filterwarnings('ignore')
 
@@ -130,8 +131,9 @@ def main (args):
   
   data_name = args.data_name
   miss_rate = args.miss_rate
-  random    = args.time
-  
+  random    = args.seed
+  time      = args.time
+
   gain_parameters = {'batch_size': args.batch_size,
                      'hint_rate': args.hint_rate,
                      'alpha': args.alpha,
@@ -141,24 +143,35 @@ def main (args):
   # Load data and introduce missingness
   ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
   
-  # Impute missing data
-  imputed_data_x = gain(miss_data_x, gain_parameters)
-  imputed_data_x_e = egain(miss_data_x, gain_parameters)
-  
-  # Report the RMSE performance
-  rmse = rmse_loss (ori_data_x, imputed_data_x, data_m)
-  rmse_e = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
-  
-  mi_data = miss_data_x.astype(float)
-  no, dim = imputed_data_x.shape
-  miss_data = np.reshape(mi_data,(no,dim))
-  np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
-  
-  print('RMSE EGAIN: ' + str(np.round(rmse_e, 6)))
-  print('RMSE  GAIN: ' + str(np.round(rmse, 6)))
-  np.savetxt("data/imputed_data_gain.csv",imputed_data_x, delimiter=',',  fmt='%d')
-  np.savetxt("data/imputed_data_egain.csv",imputed_data_x_e, delimiter=',',  fmt='%d')
 
+  gan_rs, egain_rs, miss_forest,mice, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
+
+  for i in range(time):
+    if i % 5 == 0:
+        print('=== Working on {}/{} ==='.format(i, time))
+
+    # Impute missing data
+    imputed_data_x = gain(miss_data_x, gain_parameters)
+    imputed_data_x_e = egain(miss_data_x, gain_parameters)
+    
+    # Report the RMSE performance
+    rmse = rmse_loss (ori_data_x, imputed_data_x, data_m)
+    rmse_e = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
+    
+    mi_data = miss_data_x.astype(float)
+    no, dim = imputed_data_x.shape
+    miss_data = np.reshape(mi_data,(no,dim))
+    np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
+
+    gan_rs.append(rmse)
+    egain_rs.append(rmse_e)
+    
+    np.savetxt("data/imputed_data_gain.csv",imputed_data_x, delimiter=',',  fmt='%d')
+    np.savetxt("data/imputed_data_egain.csv",imputed_data_x_e, delimiter=',',  fmt='%d')
+
+  #print(gan_rs,egain_rs)
+  print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),2)))
+  print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),2)))
   
   # MissForest
 
@@ -235,7 +248,11 @@ if __name__ == '__main__':
       help='number of repeated process',
       default=1,
       type=int)
-  
+  parser.add_argument(
+      '--seed',
+      help='number of repeated process',
+      default=42,
+      type=int)
   args = parser.parse_args() 
   
   # Calls main function  
