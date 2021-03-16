@@ -173,27 +173,27 @@ def main (args):
     imputed_data_x   = gain(miss_data_x, gain_parameters)
     imputed_data_x_e = egain(miss_data_x, gain_parameters)
 
-    imp_mf   = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 1) #20
-    imputed_data_mf = imp_mf.fit_transform(miss_data_x)
+    #imp_mf   = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 1) #20
+    #imputed_data_mf = imp_mf.fit_transform(miss_data_x)
     
-    imp_mice = IterativeImputer(estimator = BayesianRidge(),max_iter = 1) #20
-    imputed_data_mice = imp_mice.fit_transform(miss_data_x)
+    #imp_mice = IterativeImputer(estimator = BayesianRidge(),max_iter = 1) #20
+    #imputed_data_mice = imp_mice.fit_transform(miss_data_x)
     
     # Report the RMSE performance
     rmse      = rmse_loss (ori_data_x, imputed_data_x, data_m)
     rmse_e    = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
-    rmse_mf   = rmse_loss (ori_data_x, imputed_data_mf, data_m)
-    rmse_mice = rmse_loss (ori_data_x, imputed_data_mice, data_m)
+    #rmse_mf   = rmse_loss (ori_data_x, imputed_data_mf, data_m)
+    #rmse_mice = rmse_loss (ori_data_x, imputed_data_mice, data_m)
 
     gan_rs.append(rmse)
     egain_rs.append(rmse_e)
-    mice_rs.append(rmse_mice)
-    miss_rs.append(rmse_mf)
+    #mice_rs.append(rmse_mice)
+    #miss_rs.append(rmse_mf)
 
     imputed_data_x, _     = normalization(imputed_data_x)
     imputed_data_x_e, _   = normalization(imputed_data_x_e)
-    imputed_data_mf, _    = normalization(imputed_data_mf)
-    imputed_data_mice, _  = normalization(imputed_data_mice)
+    #imputed_data_mf, _    = normalization(imputed_data_mf)
+    #imputed_data_mice, _  = normalization(imputed_data_mice)
 
     mi_data = miss_data_x.astype(float)
     no, dim = imputed_data_x.shape
