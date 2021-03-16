@@ -230,7 +230,7 @@ if __name__ == '__main__':
       help='number of training interations',
       default=10000,
       type=int)
-    parser.add_argument(
+  parser.add_argument(
       '--time',
       help='number of repeated process',
       default=1,
