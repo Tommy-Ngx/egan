@@ -8,6 +8,7 @@ warnings.filterwarnings('ignore', category=DeprecationWarning)
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
+import pandas as pd
 from utils import binary_sampler, binary_sampler2
 from keras.datasets import mnist
 
