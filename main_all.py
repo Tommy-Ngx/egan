@@ -20,7 +20,7 @@ except ImportError:
     from tensorflow.python.util import deprecation_wrapper as deprecation
 deprecation._PER_MODULE_WARNING_LIMIT = 0
 
-import os
+import os,sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import argparse
@@ -54,6 +54,8 @@ from sklearn.utils.testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 from tqdm import tqdm
 from warnings import filterwarnings
+from IPython.display import clear_output
+from tqdm import tqdm_notebook as tq
 filterwarnings('ignore')
 
 def auc_dt(impute,data):
@@ -148,7 +150,6 @@ def main (args):
   gan_rs, egain_rs, mice_rs,miss_rs, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
 
   for i in range(time):
-
     # Load data and introduce missingness
     ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,time)
     if i % 5 == 0:
@@ -158,40 +159,43 @@ def main (args):
     imputed_data_x = gain(miss_data_x, gain_parameters)
     imputed_data_x_e = egain(miss_data_x, gain_parameters)
 
-    imp_mf = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 2)
+    imp_mf = IterativeImputer(estimator = DecisionTreeRegressor(), max_iter = 1) #20
     imputed_data_mf = imp_mf.fit_transform(miss_data_x)
-    imputed_data_mf, _ = normalization(imputed_data_mf)
-
-    imp_mice = IterativeImputer(max_iter = 2)
+    
+    imp_mice = IterativeImputer(estimator = BayesianRidge(),max_iter = 1) #20
     imputed_data_mice = imp_mice.fit_transform(miss_data_x)
-    imputed_data_mice, _ = normalization(imputed_data_mice)
-
     
     # Report the RMSE performance
-    rmse = rmse_loss (ori_data_x, imputed_data_x, data_m)
-    rmse_e = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
-    rmse_mf = rmse_loss (ori_data_x, imputed_data_mf, data_m)
+    rmse      = rmse_loss (ori_data_x, imputed_data_x, data_m)
+    rmse_e    = rmse_loss (ori_data_x, imputed_data_x_e, data_m)
+    rmse_mf   = rmse_loss (ori_data_x, imputed_data_mf, data_m)
     rmse_mice = rmse_loss (ori_data_x, imputed_data_mice, data_m)
-
-    
-    mi_data = miss_data_x.astype(float)
-    no, dim = imputed_data_x.shape
-    miss_data = np.reshape(mi_data,(no,dim))
-    np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
 
     gan_rs.append(rmse)
     egain_rs.append(rmse_e)
     mice_rs.append(rmse_mice)
     miss_rs.append(rmse_mf)
+
+    imputed_data_x, _     = normalization(imputed_data_x)
+    imputed_data_x_e, _   = normalization(imputed_data_x_e)
+    imputed_data_mf, _    = normalization(imputed_data_mf)
+    imputed_data_mice, _  = normalization(imputed_data_mice)
+
+    mi_data = miss_data_x.astype(float)
+    no, dim = imputed_data_x.shape
+    miss_data = np.reshape(mi_data,(no,dim))
+    np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
+
     
     np.savetxt("data/imputed_data_gain.csv",imputed_data_x, delimiter=',',  fmt='%d')
     np.savetxt("data/imputed_data_egain.csv",imputed_data_x_e, delimiter=',',  fmt='%d')
 
-  #print(gan_rs,egain_rs)
-  print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),2)))
-  print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),2)))
-  print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),2)))
-  print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),2)))
+
+  print(gan_rs,egain_rs, mice_rs,miss_rs)
+  print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),4)))
+  print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),4)))
+  print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),4)))
+  print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),4)))
   
   # MissForest
 
