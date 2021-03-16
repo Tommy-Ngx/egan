@@ -212,17 +212,17 @@ def main (args):
     gan_dt.append(gan_score_dt)
     egan_dt.append(egan_score_dt)
 
-
+  print()
   #print(gan_rs,egain_rs, mice_rs,miss_rs)
   print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),4)))
   print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),4)))
   #print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),4)))
   #print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),4)))
   print()
-  print('MLP  GAIN: {} ± {}'.format(round(np.mean(gan_mlp)*1,2), round(np.std(gan_mlp),4)))
-  print('MLP EGAIN: {} ± {}'.format(round(np.mean(egan_mlp)*1,2), round(np.std(egan_mlp),4)))
-  print('DT   GAIN: {} ± {}'.format(round(np.mean(gan_dt)*1,2), round(np.std(gan_dt),4)))
-  print('DT  EGAIN: {} ± {}'.format(round(np.mean(egan_dt)*1,2), round(np.std(egan_dt),4)))
+  print('MLP   GAIN: {} ± {}'.format(round(np.mean(gan_mlp)*1,2), round(np.std(gan_mlp),4)))
+  print('MLP  EGAIN: {} ± {}'.format(round(np.mean(egan_mlp)*1,2), round(np.std(egan_mlp),4)))
+  print('DT    GAIN: {} ± {}'.format(round(np.mean(gan_dt)*1,2), round(np.std(gan_dt),4)))
+  print('DT   EGAIN: {} ± {}'.format(round(np.mean(egan_dt)*1,2), round(np.std(egan_dt),4)))
 
   # MissForest
 
