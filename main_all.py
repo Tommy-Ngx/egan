@@ -26,7 +26,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import argparse
 import numpy as np
 
-from data_loader import data_loader, data_loader2
+from data_loader import data_loader, data_loader2, data_loader3
 from gain_ori import gain
 from egain import egain
 from utils import rmse_loss, normalization
@@ -56,6 +56,7 @@ from tqdm import tqdm
 from warnings import filterwarnings
 from IPython.display import clear_output
 from tqdm import tqdm_notebook as tq
+from google.colab import output
 filterwarnings('ignore')
 
 def auc_dt(impute,data):
@@ -114,7 +115,18 @@ def auc_lr(impute,data):
     test_pred_decision_tree = clf.predict(test_x)
     return  metrics.accuracy_score(test_lab, test_pred_decision_tree)
 
+def clf_MLP(imputed_data_x, y, train_idx, test_idx):
+    clf = MLPClassifier(hidden_layer_sizes=len(imputed_data_x[1])//2, max_iter=500,
+                                early_stopping=True, learning_rate='constant', learning_rate_init=0.1)
+    clf.fit(imputed_data_x[train_idx], y[train_idx])
+    score = clf.score(imputed_data_x[test_idx], y[test_idx])
+    return np.round(score,4)
 
+def clf_DT(imputed_data_x, y, train_idx, test_idx):
+    clf = DecisionTreeClassifier()
+    clf.fit(imputed_data_x[train_idx], y[train_idx])
+    score = clf.score(imputed_data_x[test_idx], y[test_idx])
+    return np.round(score,4)
 
 def main (args):
   '''Main function for UCI letter and spam datasets.
@@ -147,12 +159,13 @@ def main (args):
   #ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,random)
   
 
-  gan_rs, egain_rs, mice_rs,miss_rs, miss_lr, mice_lr, miss_mlp, mice_mlp = [],[],[],[],[],[],[],[];
+  gan_rs, egain_rs, mice_rs,miss_rs, gan_mlp, gan_dt, egan_mlp, egan_dt = [],[],[],[],[],[],[],[];
 
   for i in range(time):
-    clear_output()
     # Load data and introduce missingness
-    ori_data_x, miss_data_x, data_m = data_loader2(data_name, miss_rate,time)
+    ori_data_x, miss_data_x, data_m, y  = data_loader3(data_name, miss_rate,time)
+    train_idx, test_idx = train_test_split(range(len(y)), test_size=0.3, stratify=y, random_state=42)
+
     if i % 5 == 0:
         print('=== Working on {}/{} ==='.format(i, time))
 
@@ -186,18 +199,31 @@ def main (args):
     no, dim = imputed_data_x.shape
     miss_data = np.reshape(mi_data,(no,dim))
     np.savetxt("data/missing_data.csv",mi_data,delimiter=',',fmt='%1.2f')
-
-    
     np.savetxt("data/imputed_data_gain.csv",imputed_data_x, delimiter=',',  fmt='%d')
     np.savetxt("data/imputed_data_egain.csv",imputed_data_x_e, delimiter=',',  fmt='%d')
 
+    gan_score_mlp  = clf_MLP(imputed_data_x  , y, train_idx, test_idx)
+    egan_score_mlp = clf_MLP(imputed_data_x_e, y, train_idx, test_idx)
+    gan_mlp.append(gan_score_mlp)
+    egan_mlp.append(egan_score_mlp)
 
-  print(gan_rs,egain_rs, mice_rs,miss_rs)
+    gan_score_dt   = clf_DT(imputed_data_x  , y, train_idx, test_idx)
+    egan_score_dt  = clf_DT(imputed_data_x  , y, train_idx, test_idx)
+    gan_dt.append(gan_score_dt)
+    egan_dt.append(egan_score_dt)
+
+
+  #print(gan_rs,egain_rs, mice_rs,miss_rs)
   print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),4)))
   print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),4)))
-  print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),4)))
-  print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),4)))
-  
+  #print('RMSE  MICE: {} ± {}'.format(round(np.mean(mice_rs)*1,2), round(np.std(mice_rs),4)))
+  #print('RMSE MFORE: {} ± {}'.format(round(np.mean(miss_rs)*1,2), round(np.std(miss_rs),4)))
+  print()
+  print('MLP  GAIN: {} ± {}'.format(round(np.mean(gan_mlp)*1,2), round(np.std(gan_mlp),4)))
+  print('MLP EGAIN: {} ± {}'.format(round(np.mean(egan_mlp)*1,2), round(np.std(egan_mlp),4)))
+  print('DT   GAIN: {} ± {}'.format(round(np.mean(gan_dt)*1,2), round(np.std(gan_dt),4)))
+  print('DT  EGAIN: {} ± {}'.format(round(np.mean(egan_dt)*1,2), round(np.std(egan_dt),4)))
+
   # MissForest
 
   #print()
