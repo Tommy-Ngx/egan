@@ -88,6 +88,9 @@ def data_loader3 (data_name, miss_rate, random):
     if data_name == 'letter':
       le = LabelEncoder()
       y = le.fit_transform(y)
+    elif data_name == 'balance':
+      le = LabelEncoder()
+      y = le.fit_transform(y)
 
     x = x.astype(np.float32)
     data_x = x #np.loadtxt(file_name, delimiter=",", skiprows=1)
