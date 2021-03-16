@@ -213,6 +213,7 @@ def main (args):
     egan_dt.append(egan_score_dt)
 
   print()
+  print("Datasets: ",data_name)
   #print(gan_rs,egain_rs, mice_rs,miss_rs)
   print('RMSE  GAIN: {} ± {}'.format(round(np.mean(gan_rs)*1,2), round(np.std(gan_rs),4)))
   print('RMSE EGAIN: {} ± {}'.format(round(np.mean(egain_rs)*1,2), round(np.std(egain_rs),4)))
